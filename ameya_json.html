@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Parsing</title>
+</head>
+<body>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div style="text-align: center;">
+    <div style="margin-bottom: 10px">
+        <b>Enter URL for Highest-grossing films list JSON file</b>
+    </div>
+
+
+    <form>
+        <input type="text" id="filebox">
+
+
+
+        <div style="margin-top: 10px; text-align: center">
+            <button id="submit">Submit Query</button>
+        </div>
+
+    </form>
+</div>
+
+
+<script>
+
+    //Selecting the textbox
+    var box=document.querySelector("#filebox");
+
+
+    //Selecting the submit button
+    var btn=document.querySelector("#submit");
+
+
+    //Main function that performs the loads and displays the json data
+
+
+    function getFile() {
+
+        var url=box.value;
+
+        //Checking if the textBox is empty
+        if(url==""){
+            alert("Please enter a file name")
+            return
+        }
+
+        //Fetching the JSON file
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", url, false);
+        xmlhttp.send();
+
+
+        //Checking if the file exists or not
+        if(xmlhttp.status==404){
+            alert("No such file exists!");
+            return
+        }
+
+
+        //Parsing the received json file
+        jsonDoc = xmlhttp.responseText;
+        var fileObj = JSON.parse(jsonDoc);
+
+
+        //Checking if the movie list is empty
+        if (fileObj.Mainline.Table.Row == undefined || fileObj.Mainline.Table.Row.length==0) {
+            alert("No movies!")
+            return
+        }
+
+
+            //Displaying data in new file
+            var win = window.open("","","width=1500,height=700");
+
+            //Getting the main table headers
+            var tabHeaders = [];
+            tabHeaders = fileObj.Mainline.Table.Header.Data;
+
+
+            //Creating the main table
+            var movieTable = document.createElement("table");
+
+            //Styling the table
+            movieTable.setAttribute("border", "1");
+
+            //Inserting header row
+            var tab_row = movieTable.insertRow(-1);
+
+            //Adding column headers
+
+            for (var i = 0; i < tabHeaders.length; i++) {
+
+                var tab_header = document.createElement("th");
+                tab_header.setAttribute("style","font-weight:bold;text-align:center;")
+
+                tab_header.innerHTML = tabHeaders[i];
+
+                tab_row.appendChild(tab_header);
+            }
+
+
+
+
+            //Getting the actual keys in the movie objects
+            var movie_data = fileObj.Mainline.Table.Row;
+            var tags = Object.getOwnPropertyNames(movie_data[0]);
+
+
+            for (var i = 0; i < movie_data.length; i++) {
+
+                tab_row = movieTable.insertRow(-1);
+
+                for (var j = 0; j < tags.length; j++) {
+
+                    var td = tab_row.insertCell(-1);
+
+                    if (tags[j] == "Gross") {
+
+                        td.innerHTML = movie_data[i]['Gross'];
+                    }
+                    else if (tags[j] == "HomePage") {
+
+                        var anchor = document.createElement('a');
+
+                        anchor.setAttribute('href', "" + movie_data[i]['HomePage']);
+
+                        anchor.innerHTML = "" + movie_data[i]['HomePage'];
+
+                        td.appendChild(anchor);
+                    }
+                    else if (tags[j] == 'Hubs') {
+
+                        // td.setAttribute('width','230px')
+
+                        var len = movie_data[i]['Hubs']['Hub'].length;
+
+                        var list = document.createElement("ul");
+
+                        for (var k = 0; k < len; k++) {
+
+                            var li = document.createElement('li');
+
+                            // var text = document.createTextNode(movie_data[i]['Hubs']['Hub'][k]);
+
+                            if(k==0){
+                                li.appendChild(document.createTextNode(movie_data[i]['Hubs']['Hub'][k]));
+                                li.setAttribute("style","font-weight:bold")
+                            }
+                            else{
+                                li.appendChild(document.createTextNode(movie_data[i]['Hubs']['Hub'][k]));
+                            }
+
+
+
+                            list.appendChild(li);
+                        }
+
+                        td.appendChild(list);
+                    }
+                    else if (tags[j] == "Logo") {
+                        // td.setAttribute('width','200px')
+                        var logo = document.createElement("img");
+
+                        logo.setAttribute('src', "" + movie_data[i]['Logo']);
+                        // logo.setAttribute('width','200px');
+
+                        td.appendChild(logo);
+                    }
+                    else {
+
+                        td.innerHTML = movie_data[i][tabHeaders[j]];
+
+                    }
+
+
+                }
+            }
+
+
+            //Writing the final data to the window
+            win.document.write(movieTable.outerHTML);
+
+
+        }
+
+
+
+   btn.addEventListener('click',getFile);
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
