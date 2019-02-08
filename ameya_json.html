@@ -3,6 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>JSON Parsing</title>
+    <style>
+
+
+        body{
+            overflow-x: hidden;
+        }
+
+        th,td{
+            width: 200px;
+        }
+
+
+    </style>
 </head>
 <body>
 <br>
@@ -49,7 +62,7 @@
 
         //Checking if the textBox is empty
         if(url==""){
-            alert("Please enter a file name")
+            alert("Please enter a file name");
             return
         }
 
@@ -73,13 +86,13 @@
 
         //Checking if the movie list is empty
         if (fileObj.Mainline.Table.Row == undefined || fileObj.Mainline.Table.Row.length==0) {
-            alert("No movies!")
+            alert("No movies in the table!")
             return
         }
 
 
             //Displaying data in new file
-            var win = window.open("","","width=1500,height=700");
+            var win = window.open("","","width=1400,height=700");
 
             //Getting the main table headers
             var tabHeaders = [];
@@ -88,6 +101,7 @@
 
             //Creating the main table
             var movieTable = document.createElement("table");
+
 
             //Styling the table
             movieTable.setAttribute("border", "1");
@@ -139,7 +153,7 @@
                     }
                     else if (tags[j] == 'Hubs') {
 
-                        // td.setAttribute('width','230px')
+
 
                         var len = movie_data[i]['Hubs']['Hub'].length;
 
@@ -171,13 +185,27 @@
                         var logo = document.createElement("img");
 
                         logo.setAttribute('src', "" + movie_data[i]['Logo']);
-                        // logo.setAttribute('width','200px');
+                        if(movie_data[i]['Logo']==""){
+                            logo.setAttribute('width','0px');
+                            logo.setAttribute('height','0px');
+                        }
+                        else{
+                            logo.setAttribute('width','140px');
+                            logo.setAttribute('height','195px');
+                        }
+
 
                         td.appendChild(logo);
                     }
                     else {
+                        if(j==0){
+                            td.innerHTML = movie_data[i]['Title'];
+                        }
 
-                        td.innerHTML = movie_data[i][tabHeaders[j]];
+                        else if(j==1){
+                            td.innerHTML = movie_data[i]['Year'];
+                        }
+
 
                     }
 
@@ -195,17 +223,6 @@
 
 
    btn.addEventListener('click',getFile);
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 
